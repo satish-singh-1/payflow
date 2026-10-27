@@ -21,13 +21,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(
                 email.trim().toLowerCase()
         ).orElseThrow(() ->
-                new UsernameNotFoundException("Invalid email or password")
+                new UsernameNotFoundException("User not found")
         );
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPasswordHash())
-                .authorities(user.getRole().name())
+                .authorities("ROLE_USER")
                 .build();
     }
 }

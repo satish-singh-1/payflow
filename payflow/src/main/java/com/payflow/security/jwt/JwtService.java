@@ -36,6 +36,42 @@ public class JwtService {
                 .signWith(secretKey)
                 .compact();
     }
+    public boolean isTokenValid(
+            String token,
+            org.springframework.security.core.userdetails.UserDetails userDetails
+    ) {
+        try {
+            String email = extractEmail(token);
+
+            return email.equals(userDetails.getUsername())
+                    && !isTokenExpired(token);
+        } catch (io.jsonwebtoken.JwtException
+                 | IllegalArgumentException exception) {
+            return false;
+        }
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new java.util.Date());
+    }
+
+    private java.util.Date extractExpiration(String token) {
+        return io.jsonwebtoken.Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration();
+    }
+
+    public String extractEmail(String token) {
+        return io.jsonwebtoken.Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
 
     public long getExpirationMs() {
         return expirationMs;

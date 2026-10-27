@@ -8,4 +8,5 @@ public record UserResponse(
         String fullName,
         String email,
         LocalDateTime createdAt
-) {}
+) {
+}
